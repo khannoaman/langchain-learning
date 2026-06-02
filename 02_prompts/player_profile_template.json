@@ -1,0 +1,17 @@
+{
+    "name": null,
+    "input_variables": [
+        "country",
+        "format",
+        "player_name"
+    ],
+    "optional_variables": [],
+    "output_parser": null,
+    "partial_variables": {},
+    "metadata": null,
+    "tags": null,
+    "template": "\nYou are a cricket analyst.\n\nGiven the following information:\n\nPlayer Name: {player_name}\nFormat: {format}\nCountry: {country}\n\nProvide a detailed profile of the player including:\n\n1. Full Name\n2. Country\n3. Playing Role (Batsman/Bowler/All-rounder/Wicketkeeper)\n4. Batting Style\n5. Bowling Style\n6. Major Teams Played For\n7. Career Statistics\n8. Notable Achievements\n9. Strengths\n10. Recent Performance Summary\n11. Interesting Facts\n\nReturn the response in well-structured markdown.\n\nIf the player is unknown, clearly state that the player could not be identified.\n",
+    "template_format": "f-string",
+    "validate_template": false,
+    "_type": "prompt"
+}
