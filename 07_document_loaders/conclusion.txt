@@ -1,0 +1,92 @@
+Conclusion
+This thesis investigated the problem of adapting performance prediction models across
+heterogeneous environments in edge Function-as-a-Service (FaaS) systems. In decentralized
+FaaS (DFaaS) deployments, predictive models trained on one node often experience
+performance degradation when applied to other nodes due to differences in hardware
+characteristics and workload behaviour. Such discrepancies introduce a distribution shift
+that limits the reliability of performance models used by DFaaS Agents for proactive load
+balancing and resource management.
+To address this challenge, this work explored adapter-based domain adaptation strategies
+for DFaaS performance modelling. A unified multi-task architecture was employed to
+jointly model resource usage metrics and overload conditions, enabling a single model to
+capture multiple aspects of system performance. Lightweight adapter modules were then
+introduced to adapt the model to new environments while keeping the base model frozen.
+The study systematically investigated different adapter architectures, their placement
+within the network, and the amount of target-domain data required to achieve effective
+adaptation.
+
+7.1 Answers to Research Questions
+
+The experimental results provide clear answers to the research questions introduced
+in Chapter 3. The findings demonstrate the effectiveness of the proposed multi-task,
+adapter-based framework for DFaaS performance modelling under domain shift.
+
+RQ1 — Unified Multi-Task Modelling
+The results demonstrate that a unified multi-task architecture can effectively model both
+resource usage prediction and overload classification in the DFaaS context. The proposed
+model jointly predicts multiple performance indicators, including CPU usage, memory
+usage, and latency, while simultaneously identifying node overload conditions.
+Experimental evaluation shows that the multi-task architecture achieves strong predictive
+performance across both tasks when trained directly on the target domain. In
+particular, the scratch-trained model achieves an overall regression performance of approximately
+R2 ≈ 0.83, while maintaining high classification accuracy of approximately
+0.96 and a macro-F1 score above 0.90. These results indicate that a shared representation
+can successfully capture the relationships between workload characteristics and system
+behaviour without requiring separate models for regression and classification tasks.
+104
+Overall, the findings confirm that integrating both prediction tasks within a single architecture
+is feasible and provides a more efficient alternative to maintaining independent
+models.
+
+RQ2 — Adapter-Based Domain Adaptation
+The experiments demonstrate that adapter-based domain adaptation effectively restores
+predictive performance when a model trained on a source node is applied to a new target
+node under distribution shift. When the source model is evaluated directly on the target
+domain without adaptation, regression performance deteriorates substantially. The base
+model achieves an overall performance of approximately R2 ≈ 0.05, indicating that the
+learned workload–performance relationships do not transfer reliably across heterogeneous
+nodes.
+Introducing lightweight adapter modules significantly improves predictive accuracy.
+After adaptation, the best configuration (a bottleneck adapter placed at the pre-output
+layer) achieves an overall regression performance of approximately R2 ≈ 0.83, effectively
+matching the performance of a model trained directly on the target domain from
+scratch (R2 ≈ 0.83). Classification performance also remains strong after adaptation.
+The adapted model achieves an accuracy of approximately 0.94 and a macro-F1 score
+around 0.88, demonstrating that the adapter-based strategy preserves reliable overload
+detection while adapting to the new domain.
+These results confirm that freezing the base model and training only lightweight
+adapter modules is sufficient to recover most of the predictive performance lost due to
+domain shift, while requiring significantly fewer trainable parameters and substantially
+shorter training time than full retraining.
+
+RQ3 — Adapter Placement Sensitivity
+The experiments show that the position of adapter modules within the network architecture
+has a significant impact on adaptation effectiveness. Adapters inserted in early
+layers provide only moderate improvements over the base model, indicating that low-level
+input representations remain relatively stable across domains.
+In contrast, inserting adapters in deeper layers consistently yields stronger improvements
+in regression performance. The best results are obtained when the adapter is
+placed near the task-specific output layers, particularly in the pre-output position. This
+configuration achieves the highest overall regression performance (R2 ≈ 0.83) among the
+evaluated placements.
+These findings suggest that domain shift primarily affects higher-level relationships
+between workload patterns and system performance metrics rather than the initial encoding
+of input features. Correcting deeper predictive representations is therefore the
+most effective strategy for restoring model accuracy under distribution shift.
+
+RQ4 — Data Efficiency of Adaptation
+The data reduction experiments demonstrate that adapter-based adaptation remains effective
+even when the amount of available target-domain training data is reduced. Meaningful
+performance improvements can be achieved using only a subset of the full dataset.
+105
+For regression tasks, stable adaptation performance is maintained with roughly one
+third of the original training data, achieving R2 values above 0.73. When the dataset
+is reduced further, performance gradually declines but still remains substantially better
+than the unadapted base model. For classification tasks, the model shows even greater
+robustness to data reduction. Accuracy remains above 0.93 and macro-F1 above 0.85 for
+several reduced-data configurations.
+However, the experiments also reveal that workload diversity is as important as
+dataset size. Filtering strategies that preserve a broader range of workload configurations
+produce more stable and reliable results than larger datasets concentrated in
+narrow workload regions. This indicates that maintaining representative coverage of the
+workload space is essential for effective domain adaptation.
