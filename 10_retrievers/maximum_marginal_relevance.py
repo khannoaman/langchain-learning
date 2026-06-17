@@ -2,13 +2,17 @@ from langchain_community.vectorstores import FAISS
 from langchain_core.documents import Document
 from langchain_huggingface import HuggingFaceEndpointEmbeddings
 from langchain_community.retrievers import WikipediaRetriever
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 import wikipedia
 from dotenv import load_dotenv
 load_dotenv()
 
 
 wikipedia.set_user_agent("LangChainPracticeBot/1.0 (noaman@example.com)")
-wiki_retriever = WikipediaRetriever(top_k_results=3,lang="en", doc_content_chars_max=800)
+wiki_retriever = WikipediaRetriever(top_k_results=3,lang="en",doc_content_chars_max=2000)
+text_splitter = RecursiveCharacterTextSplitter(separators=["\n\n", ". ", " ", ""], 
+                                                chunk_size=1000, chunk_overlap=200)
+
 
 embeddings = HuggingFaceEndpointEmbeddings(repo_id="sentence-transformers/all-MiniLM-L6-v2", task="feature-extraction")
 
@@ -17,7 +21,9 @@ teams = ["Royal Challenger Banglore","Chennai Super Kings","Mumbai Indians","Sun
 docs = []
 for team in teams:
     query = f"IPL '{team}'"
-    docs += wiki_retriever.invoke(query)
+    pages = wiki_retriever.invoke(query)
+    docs += text_splitter.split_documents(pages)
+
 
 print(f"Total {len(docs)} documents.\n")
 
@@ -25,9 +31,9 @@ print(f"Total {len(docs)} documents.\n")
 vectorstore = FAISS.from_documents(docs, embeddings)
 
 # Convert vectorstore into a retriever
-retriever = vectorstore.as_retriever(search_kwargs={"k": 3})
+retriever = vectorstore.as_retriever(search_type="mmr",search_kwargs={"k": 5,"lambda_mult": 0.5})
 
-query = "Tell me about royal challengers banglore?"
+query = "Provide all the information about IPL 2026. Who won the league and information about different awards?"
 
 results = retriever.invoke(query)
 
